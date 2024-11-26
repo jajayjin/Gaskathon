@@ -2,28 +2,39 @@ import streamlit as st
 import pandas as pd
 from sklearn import datasets
 from sklearn.ensemble import RandomForestClassifier
+from streamlit_navigation_bar import st_navbar
+import datetime
+
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+# page = st_navbar(["Demand", "Supply","Projection"])
 
 st.write("""
-# Simple Iris Flower Prediction App
+# Apex Gas PTT Gaskathon
 
-This app predicts the **Iris flower** type!
+This app predicts the **Demand and Supply** !
 """)
 
+#chart history demand, chart history LNG pric
 st.sidebar.header('User Input Parameters')
 spotlng = st.number_input('Spot lng price', value=2.78)
-def user_input_features():
-    sepal_length = st.sidebar.slider('Sepal length', 4.3, 7.9, 5.4)
-    sepal_width = st.sidebar.slider('Sepal width', 2.0, 4.4, 3.4)
-    petal_length = st.sidebar.slider('Petal length', 1.0, 6.9, 1.3)
-    petal_width = st.sidebar.slider('Petal width', 0.1, 2.5, 0.2)
-    data = {'sepal_length': sepal_length,
-            'sepal_width': sepal_width,
-            'petal_length': petal_length,
-            'petal_width': petal_width}
-    features = pd.DataFrame(data, index=[0])
-    return features
+demand_date = st.date_input("Input the date", datetime.date(2024, 11, 27))
+st.write("Your demand date is:", demand_date)
 
-df = user_input_features()
+demand_data = pd.read_csv("Actualdemand.csv")
+# def user_input_features():
+#     sepal_length = st.sidebar.slider('Sepal length', 4.3, 7.9, 5.4)
+#     sepal_width = st.sidebar.slider('Sepal width', 2.0, 4.4, 3.4)
+#     petal_length = st.sidebar.slider('Petal length', 1.0, 6.9, 1.3)
+#     petal_width = st.sidebar.slider('Petal width', 0.1, 2.5, 0.2)
+#     data = {'sepal_length': sepal_length,
+#             'sepal_width': sepal_width,
+#             'petal_length': petal_length,
+#             'petal_width': petal_width}
+#     features = pd.DataFrame(data, index=[0])
+#     return features
+
+# df = user_input_features()
 
 st.subheader('User Input parameters')
 st.write(df)

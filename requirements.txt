@@ -1,1 +1,4 @@
 scikit-learn
+streamlit-navigation-bar
+pyarrow
+plotly
