@@ -10,7 +10,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 # page = st_navbar(["Demand", "Supply","Projection"])
 # Custom CSS for fonts
-page = st.sidebar.radio("Pages", ["Demand", "Supply", "Projection"])
+page = st.sidebar.radio("Pages", ["Demand", "Supply"])
 demand_data = pd.read_csv("GSM_demandbysector.csv")
 print(demand_data.head())
 demand_data['Power Generation']=demand_data['Power Generation'].str.replace(',', "").astype(float)
@@ -36,6 +36,7 @@ if page == "Demand":
     st.write("We predict demand of the next day:" ,(predict_totallast7.tail(1))['Date'].values[0])
     st.write("\nThe predicted demand will be",(predict_totallast7.tail(1))['Total_Demand'].values[0], " MMSCFD")
     st.write("Actual demand is:" ,(actual_totallast7.tail(1))['Total_Demand'].values[0],"MMSCFD")
+    predictdemand_nextday  = (predict_totallast7.tail(1))['Total_Demand'].values[0]
     # Convert 'Date' to datetime if it's not already in that format
     # Convert 'Date' to datetime if it's not already in that format
     actual_totallast7['Date'] = pd.to_datetime(actual_totallast7['Date'], errors='coerce')
@@ -79,8 +80,8 @@ if page == "Demand":
     st.pyplot(plt)  # If using Streamlit
     data = pd.DataFrame({
         'Spot': actual_totallast7['Date'],
-        'Total_demand': actual_totallast7['Total_Demand'].values,
-        'Total_pred': predict_totallast7['Total_Demand'].values
+        'Total Actual Demand': actual_totallast7['Total_Demand'].values,
+        'Total Predicted Demand': predict_totallast7['Total_Demand'].values
     })
 
     # Display the line chart
@@ -226,7 +227,17 @@ if page == "Demand":
         data['Spot'] = pd.Categorical(data['Spot'], categories=month_order, ordered=True)
         data = data.sort_values('Spot')
         data = data.set_index('Spot')
-        st.area_chart(data,color=[ "#77CDFF"] )  
+        st.area_chart(data,color=[ "#77CDFF"] )
+    instant_change_demand = st.checkbox('There is instant occasion and you want to change the quantity of demand')
+    if instant_change_demand:
+        predictdemand_nextday = st.number_input("Input the changed demand",value=predictdemand_nextday)
+    selling_price = st.number_input("Input the selling price (Bath/MMBtu)", value= 347.4511)
+    st.write("""
+    ## Total Revenue
+
+    """)
+    Totalrevenue =  predictdemand_nextday*selling_price
+    st.write("Total Revenue", Totalrevenue, "Bath")
 
 elif page == "Supply":
     st.title("Welcome to the Supply page")
@@ -241,6 +252,7 @@ elif page == "Supply":
     st.write("We forecast the End Spot LNG price for the upcoming week, concluding on:" ,(JKM_predict_last10w.tail(1))['Date'].values[0])
     st.write("\nThe predicted Spot LNG price will be",(JKM_predict_last10w.tail(1))['JKM_Price'].values[0],"USD/MMBTU")
     st.write("Actual Spot LNG price is:" ,(JKM_actual_last10w.tail(1))['JKM_Price'].values[0],"USD/MMBTU") 
+    supply=JKM_predict_last10w.tail(1)['JKM_Price'].values[0]
     JKM_actual['Date'] = pd.to_datetime(JKM_actual['Date'], errors='coerce' )
     JKM_predict['Date'] = pd.to_datetime(JKM_predict['Date'], errors='coerce' )
     JKM_actual['Year'] = JKM_actual['Date'].dt.year
@@ -277,6 +289,23 @@ elif page == "Supply":
 
     # Display the line chart
     st.line_chart(data.set_index('Spot'))
-elif page == "Projection":
-    st.title("Welcome to the Projection page")
-    st.write("This will simulate the projection of PTT")
+    instant_change_supply = st.checkbox('There is instant occasion and you want to change the next 7 days LNG price')
+    if instant_change_supply:
+        supply= st.number_input("Input the changed Spot LNG Price next 7 days",value=supply)
+    shipping_cost = st.number_input("The shipping cost of spot LNG :")  
+    st.write("""
+    ## Supply from Myanmar
+
+    """)
+    st.write("The prediction of Myanmar price will come up soon.")
+
+    st.write("""
+    ## Gas production plan
+
+    """)
+    gasgulfthaistore = st.number_input("The current quantity of the natural gas store from **Gulf of Thailand** in the storage (M Cubric foot):",value=100)
+    pricegasgulf = st.number_input("Price of the natural gas store from **Gulf of Thailand** in the storage (Bath/MMBtu):",value=100)
+    gasonshorestore = st.number_input("The current quantity of the natural gas store from **Onshore** in the storage (M Cubric foot):",value=100)
+    priceonshore = st.number_input("Price of the natural gas store from **Onshore** in the storage (Bath/MMBtu):",value=100)
+    storage_cost = st.number_input("The cost of reservation of the **LD storage** (Bath/MMBTU):",value=16)
+    
