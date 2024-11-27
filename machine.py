@@ -283,8 +283,8 @@ elif page == "Supply":
     st.write("Trend of Spot LNG price since 11/13/2022")
     data = pd.DataFrame({
         'Spot': JKM_actual['Date'],
-        'Actual Spot LNG Price (USD/MMBYU)': JKM_actual['JKM_Price'].values,
-        'Predict Spot LNG Price (USD/MMBYU)': JKM_predict['JKM_Price'].values
+        'Actual Spot LNG Price (USD/MMBTU)': JKM_actual['JKM_Price'].values,
+        'Predict Spot LNG Price (USD/MMBTU)': JKM_predict['JKM_Price'].values
     })
 
     # Display the line chart
@@ -304,8 +304,8 @@ elif page == "Supply":
 
     """)
     gasgulfthaistore = st.number_input("The current quantity of the natural gas store from **Gulf of Thailand** in the storage (M Cubric foot):",value=100)
-    pricegasgulf = st.number_input("Price of the natural gas store from **Gulf of Thailand** in the storage (Bath/MMBtu):",value=100)
+    pricegasgulf = st.number_input("Price of the natural gas store from **Gulf of Thailand** in the storage (Bath/MMBTU):",value=100)
     gasonshorestore = st.number_input("The current quantity of the natural gas store from **Onshore** in the storage (M Cubric foot):",value=100)
-    priceonshore = st.number_input("Price of the natural gas store from **Onshore** in the storage (Bath/MMBtu):",value=100)
+    priceonshore = st.number_input("Price of the natural gas store from **Onshore** in the storage (Bath/MMBTU):",value=100)
     storage_cost = st.number_input("The cost of reservation of the **LD storage** (Bath/MMBTU):",value=16)
     
