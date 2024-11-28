@@ -22,7 +22,7 @@ demand_data['Date'] = pd.to_datetime(demand_data['Date'])
 if page == "Demand":
     st.title("Welcome to the Demand page")
     st.write("This will simulate the demand of PTT")
-
+    
     st.write("""
     ## Our prediction of demand
 
@@ -132,6 +132,14 @@ if page == "Demand":
         # Show the plot
         plt.tight_layout()  # Adjusts plot to ensure it fits well within the window
         st.pyplot(plt)
+        data = pd.DataFrame({
+        'Spot': actual_totallast7['Date'],
+        f'Total Actual of {i}': actual_totallast7[i].values,
+        f'Total Predicted Demand of {i}': predict_totallast7[i].values
+        })
+
+    # Display the line chart
+        st.line_chart(data.set_index('Spot'))
 
     st.write(f"""
     #### The dashboard shows overall predicted demand at {datewepredict}
