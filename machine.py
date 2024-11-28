@@ -86,9 +86,80 @@ if page == "Demand":
 
     # Display the line chart
     st.line_chart(data.set_index('Spot'))
+    category = ['PowerGeneration','Industry' ,'GSP','NGV']
+    listnextday =[]
+    for i in category:
+        st.write(f"""
+        #### Our Prediction for demand of the {i}
 
+        """)
+        actualdemandtotal = pd.read_csv(i+"_Demand_y_test.csv")
+        predictdemandtotal = pd.read_csv(i+"_Demand_y_pred.csv")
+
+        # Select the last 7 rows of the datasets
+        actual_totallast7 = actualdemandtotal.tail(7)
+        predict_totallast7 = predictdemandtotal.tail(7)
+
+        # Convert 'Date' columns to datetime format
+        
+
+        # Display the prediction and actual demand for the next day
+        datewepredict =predict_totallast7.tail(1)['Date'].values[0]
+        st.write("We predict demand for the next day:", (predict_totallast7.tail(1))['Date'].values[0])
+        st.write("\nThe **predicted demand** will be", (predict_totallast7.tail(1))[i].values[0], "MMSCFD")
+        st.write("**Actual demand** is:", (actual_totallast7.tail(1))[i].values[0], "MMSCFD")
+        listnextday.append((predict_totallast7.tail(1))[i].values[0])
+        actual_totallast7['Date'] = pd.to_datetime(actual_totallast7['Date'], errors='coerce')
+        predict_totallast7['Date'] = pd.to_datetime(predict_totallast7['Date'], errors='coerce')
+        # Plot the actual demand (first 6 days) and the predicted demand (7th day)
+        plt.figure(figsize=(10, 5))
+        plt.plot(actual_totallast7['Date'], actual_totallast7[i], 'bo-', label=f'Actual Demand of {i}')
+
+        # Plot the predicted demand for the 7th day as a single red "x"
+        plt.plot(predict_totallast7['Date'].iloc[-1], predict_totallast7[i].iloc[-1], 'rx', markersize=10, label=f'Predicted Demand of {i}')
+
+        # Adding labels and title
+        plt.title(f'Actual vs Predicted Demand of {i} for the Last 7 Days')
+        plt.xlabel('Date')
+        plt.ylabel(f'Total Demand of {i} (MMSCFD)')
+
+        # Rotate the x-axis labels for better readability
+        plt.xticks(rotation=45)
+
+        # Display the legend
+        plt.legend()
+
+        # Show the plot
+        plt.tight_layout()  # Adjusts plot to ensure it fits well within the window
+        st.pyplot(plt)
+
+    st.write(f"""
+    #### The dashboard shows overall predicted demand at {datewepredict}
+
+    """)
+    labels = ['Power Generation', 'Industry', 'GSP', 'NGV']
+    sizes = listnextday
+    blue_colors = ['#5D8AA8', '#1E3A5F', '#2C7B9A', '#4A90B8', '#7BB9D6']
+
+    fig, ax = plt.subplots(figsize=(50,50))
+
+    # Create a pie chart with a 'hole' in the middle to form a donut
+    wedges, texts, autotexts = ax.pie(
+        sizes, 
+        labels=labels, 
+        autopct='%1.1f%%',  # Show percentages with 1 decimal place
+        startangle=90, 
+        wedgeprops={'width': 0.5},  # This creates the hole in the middle
+        colors=blue_colors  # Apply the blue tones
+    )
+    for autotext in autotexts:
+        autotext.set_fontsize(80) 
+    for text in texts:
+        text.set_fontsize(80)
+    ax.set_title('Gas Demand from each sector', fontsize=100, color='navy')
+    st.pyplot(fig)
     st.write("""
-    ## The dashboard of demand for each sector
+    ## The dashboard shows demand for each sector
 
     """)
     demand_date = st.date_input("Select the date for demand")
@@ -137,6 +208,7 @@ if page == "Demand":
             st.pyplot(fig)
     else:
         st.write("No data at", demand_date)
+
 
     st.write("""
     ## Trend of total demand
